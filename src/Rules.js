@@ -19,16 +19,16 @@ class Rule {
     return dice.reduce((prev, curr) => prev + curr);
   }
 
-  freq(dice) {
+  freq(dice) { // مجموع تكرار نتائج النرد
     // frequencies of dice values
     const freqs = new Map();
     for (let d of dice) freqs.set(d, (freqs.get(d) || 0) + 1);
     return Array.from(freqs.values());
   }
 
-  count(dice, val) {
+  count(dice, val) { 
     // # times val appears in dice
-    return dice.filter(d => d === val).length;
+    return dice.filter(d => d === val).length; // مجموع تكرار قيمة معينة
   }
 }
 
@@ -38,7 +38,7 @@ class Rule {
  */
 
 class TotalOneNumber extends Rule {
-  evalRoll = dice => {
+  evalRoll = dice => { // مجموع تكرار قيمة معينة ضرب قيمتها مثلا الرقم ثلاثة مكرر مرتين ضرب قيمته وهو 3 * 2 = 6 
     return this.val * this.count(dice, this.val);
   };
 }
@@ -57,14 +57,31 @@ class SumDistro extends Rule {
 
 /** Check if full house (3-of-kind and 2-of-kind) */
 
-class FullHouse {
+class FullHouse extends Rule {
   // TODO
+  evalRoll = (dice) => {
+    const freqs = this.freq(dice);
+
+    return freqs.includes(2) && freqs.includes(3) ? this.score : 0;
+  }
+
 }
 
 /** Check for small straights. */
 
-class SmallStraight {
+class SmallStraight extends Rule {
   // TODO
+  evalRoll = dice => {
+    const d = new Set(dice);
+    
+    if(d.has(2) && d.has(3) && d.has(4) && (d.has(5) || d.has(1)))
+      return this.score;
+
+    if(d.has(3) && d.has(4) && d.has(5) && (d.has(6) || d.has(2)))
+      return this.score;
+
+    return 0;
+  }
 }
 
 /** Check for large straights. */
@@ -100,10 +117,10 @@ const threeOfKind = new SumDistro({ count: 3 });
 const fourOfKind = new SumDistro({ count: 4 });
 
 // full house scores as flat 25
-const fullHouse = "TODO";
+const fullHouse = new FullHouse({ score: 25});
 
 // small/large straights score as 30/40
-const smallStraight = "TODO";
+const smallStraight = new SmallStraight({ score: 30 });
 const largeStraight = new LargeStraight({ score: 40 });
 
 // yahtzee scores as 50
