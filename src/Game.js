@@ -54,22 +54,24 @@ class Game extends Component {
         st.locked[i] ? d : Math.ceil(Math.random() * 6)
       ),
       locked: st.rollsLeft > 1 ? st.locked : Array(NUM_DICE).fill(true),
-      rolling: false,
-      rollsLeft: st.rollsLeft - 1
+      rollsLeft: st.rollsLeft - 1,
+      rolling: false
     }));
     console.log(this.state.locked);
-    console.log(this.state.dice);
+    console.log(this.state.rolling);
   }
 
   toggleLocked(idx) {
     // toggle whether idx is in locked or not
-    this.setState(st => ({
-      locked: [
-        ...st.locked.slice(0, idx),
-        !st.locked[idx],
-        ...st.locked.slice(idx + 1)
-      ]
-    }));
+    if (this.state.rollsLeft > 0 && !this.state.rolling) {
+      this.setState(st => ({
+        locked: [
+          ...st.locked.slice(0, idx),
+          !st.locked[idx],
+          ...st.locked.slice(idx + 1)
+        ]
+      }));
+    }
   }
 
   doScore(rulename, ruleFn) {
@@ -93,7 +95,7 @@ class Game extends Component {
   }
 
   render() {
-    const { rolling, dice, locked } = this.state;
+    const { rolling, dice, locked, rollsLeft, scores } = this.state;
     return (
       <div className='Game'>
         <header className='Game-header'>
@@ -103,13 +105,14 @@ class Game extends Component {
             <Dice
               dice={dice}
               locked={locked}
-              handleClick={() => this.toggleLocked(this.props.idx)}
+              handleClick={this.toggleLocked}
               rolling={rolling}
+              disabled={rollsLeft === 0}
             />
             <div className='Game-button-wrapper'>
               <button
                 className='Game-reroll'
-                disabled={this.state.locked.every(x => x)}
+                disabled={this.state.locked.every(x => x) || rollsLeft === 0 || rolling}
                 onClick={this.animateRoll}
               >
                 {this.displayRollInfo()}
@@ -117,7 +120,7 @@ class Game extends Component {
             </div>
           </section>
         </header>
-        <ScoreTable doScore={this.doScore} scores={this.state.scores} />
+        <ScoreTable doScore={this.doScore} scores={scores} />
       </div>
     );
   }
