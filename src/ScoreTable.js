@@ -18,6 +18,16 @@ import {
 } from "./Rules";
 
 class ScoreTable extends Component {
+
+  getTotalScores(){
+    const { scores } = this.props;
+    let totalScores = 0;
+    for(let key in scores) {
+      if(scores[key]) totalScores += scores[key];
+    }
+    return totalScores;
+  }
+
   render() {
     const { scores, doScore } = this.props;
 
@@ -119,6 +129,7 @@ class ScoreTable extends Component {
             </tbody>
           </table>
         </section>
+        <h2>Total Scores: {this.getTotalScores()}</h2>
       </div>
     );
   }
