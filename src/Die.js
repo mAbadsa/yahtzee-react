@@ -4,7 +4,7 @@ import "./Die.css";
 class Die extends Component {
   static defaultProps = {
     numberWords: ["one", "two", "three", "four", "five", "six"],
-    val: 5
+    val: 1
   };
   constructor(props) {
     super(props)
